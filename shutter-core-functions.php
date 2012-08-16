@@ -10,7 +10,7 @@ function shutter_get_template_part( $slug, $name = '' ) {
 	
 	// Look in yourtheme/slug-name.php and yourtheme/shutter/slug-name.php
 	if ( $name ) 
-		$template = locate_template( array ( "{$slug}-{$name}.php", "{$wpshutter->template_url}{$slug}-{$name}.php" ) );
+		$template = locate_template( array ( "{$slug}-{$name}.php", "{$wpshutter->template_url()}{$slug}-{$name}.php" ) );
 	
 	// Get default slug-name.php
 	if ( !$template && $name && file_exists( $wpshutter->plugin_path() . "/templates/{$slug}-{$name}.php" ) )
@@ -18,7 +18,7 @@ function shutter_get_template_part( $slug, $name = '' ) {
 
 	// If template file doesn't exist, look in yourtheme/slug.php and yourtheme/shutter/slug.php
 	if ( !$template ) 
-		$template = locate_template( array ( "{$slug}.php", "{$wpshutter->template_url}{$slug}.php" ) );
+		$template = locate_template( array ( "{$slug}.php", "{$wpshutter->template_url()}{$slug}.php" ) );
 
 	if ( $template ) 
 		load_template( $template, false );
@@ -51,7 +51,7 @@ function shutter_get_template( $template_name, $args = array(), $template_path =
 function shutter_locate_template( $template_name, $template_path = '', $default_path = '' ) {
 	global $wpshutter;
 	
-	if ( ! $template_path ) $template_path = $wpshutter->template_url;
+	if ( ! $template_path ) $template_path = $wpshutter->template_url();
 	if ( ! $default_path ) $default_path = $wpshutter->plugin_path() . '/templates/';
 	
 	// Look within passed path within the theme - this is priority

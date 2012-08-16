@@ -486,6 +486,10 @@ if ( ! class_exists( 'WPShutter' ) ) :
 			return $this->plugin_path = untrailingslashit( plugin_dir_path( __FILE__ ) );
 		}
 	 
+		public function template_url() {
+			return esc_url( $this->template_url );
+		}
+
 		/**
 		 * AJAX URL
 		 */
