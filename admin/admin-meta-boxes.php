@@ -45,7 +45,7 @@ class Shutter_Meta_Box {
 		
 	<?php }
 	
-	function add_proofing_save_postdata( $post_id ) {
+	public function add_proofing_save_postdata( $post_id ) {
 
 	  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
 	      return;
