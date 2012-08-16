@@ -25,9 +25,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-if ( !defined( 'ABSPATH' ) ) exit; // Lock It Down
+if ( ! defined( 'ABSPATH' ) ) exit; // Lock It Down
 
-if ( !class_exists( 'WPShutter' ) ) :
+if ( ! class_exists( 'WPShutter' ) ) :
 	
 	/**
 	 * Main Shutter Class
@@ -37,16 +37,16 @@ if ( !class_exists( 'WPShutter' ) ) :
 	class WPShutter {
 	
 		// Version
-		var $version = '1.0.4';
+		const version = '1.0.4';
 	
 		// URLS
-		var $plugin_url;
-		var $plugin_path;
-		var $template_url;
+		private $plugin_url;
+		private $plugin_path;
+		private $template_url;
 	
 		// Errors & Messages
-		var $errors = array(); // Stores Errors
-		var $messages = array(); // Stores Messages
+		public $errors = array(); // Stores Errors
+		public $messages = array(); // Stores Messages
 
 		// Body Classes
 		private $_body_classes = array();
@@ -54,13 +54,10 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Shutter Constructor
 		 */
-		function __construct() {
+		public function __construct() {
 
 			// PHP Session
 			if ( ! session_id() ) session_start();
-		
-			// Define Version
-			define( 'WPSHUTTER_VERSION', $this->version );
 
 			// Require Files
 			$this->includes();
@@ -77,10 +74,14 @@ if ( !class_exists( 'WPShutter' ) ) :
 			do_action( 'wpshutter_loaded' );
 		}
 
+		public function get_version () {
+			return WPShutter::version;
+		}
+
 		/**
 		 * Required Files
 		 */
-		function includes() {
+		public function includes() {
 			
 			// Backend Only
 			if ( is_admin() ) $this->admin_includes();
@@ -89,52 +90,52 @@ if ( !class_exists( 'WPShutter' ) ) :
 			if ( ! is_admin() || defined('DOING_AJAX') ) $this->frontend_includes();
 			
 			// Core Shutter Functions
-			include( 'shutter-core-functions.php' );
+			require_once( 'shutter-core-functions.php' );
 			
 			// PressTrends Tracking
-			include ( 'presstrends.php' );
+			require_once ( 'presstrends.php' );
 			
 		}
 	
 		/**
 		 * Backend Only
 		 */
-		function admin_includes() {
-			include( 'admin/admin-init.php' );
-			include( 'admin/rebuild-images.php' );
+		public function admin_includes() {
+			require_once( 'admin/admin-init.php' );
+			require_once( 'admin/rebuild-images.php' );
 		}
 	
 		/**
 		 * Frontend Only
 		 */
-		function frontend_includes() {
+		public function frontend_includes() {
 			
-			include( 'shutter-hooks.php' );
-			include( 'shortcodes/shortcode-init.php' );
+			require_once( 'shutter-hooks.php' );
+			require_once( 'shortcodes/shortcode-init.php' );
 			
 		}
 	
 		/**
 		 * Template Functions
 		 */
-		function include_template_functions() {
-			include( 'template.php' );
+		public function include_template_functions() {
+			require_once( 'template.php' );
 		}
 	
 		/**
 		 * Install
 		 */
-		function install() {
+		public function install() {
 			// register_activation_hook( __FILE__, 'activate_wpshutter' );
 			// register_activation_hook( __FILE__, 'flush_rewrite_rules' );
-			if ( get_option('wpshutter_db_version') != $this->version ) 
+			if ( get_option('wpshutter_db_version') != $this->get_version() ) 
 				add_action( 'init', 'install_wpshutter', 1 );
 		}
 	
 		/**
 		 * Initialize
 		 */
-		function init() {
+		public function init() {
 
 			$this->load_plugin_textdomain(); // Localization
 
@@ -178,7 +179,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Localization
 		 */
-		function load_plugin_textdomain() {
+		public function load_plugin_textdomain() {
 			$locale = apply_filters( 'plugin_locale', get_locale(), 'wpshutter' );
 			load_plugin_textdomain( 'wpshutter', false, dirname( plugin_basename( __FILE__ ) ).'/languages' );
 		}
@@ -186,7 +187,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Template Loader
 		 */
-		function template_loader( $template ) {
+		public function template_loader( $template ) {
 			
 			do_action( 'shutter_template_loader_before' );
 		
@@ -212,13 +213,13 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Register Globals
 		 */
-		function register_globals() {
+		public function register_globals() {
 		}
 	
 		/**
 		 * Add Theme Compatibility
 		 */
-		function compatibility() {
+		public function compatibility() {
 			
 			// Post Thumbnail Support
 			if ( ! current_theme_supports( 'post-thumbnails' ) ) :
@@ -247,14 +248,14 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Output Shutter Details
 		 */
-		function generator() {
+		public function generator() {
 			echo "\n\n" . '<!-- WPShutter Version -->' . "\n" . '<meta name="generator" content="WPShutter ' . $this->version . '" />' . "\n\n";
 		}
 	
 		/**
 		 * Add Body Classes
 		 */
-		function wp_head() {
+		public function wp_head() {
 			$theme_name = ( function_exists( 'wp_get_theme' ) ) ? wp_get_theme() : get_current_theme();
 			$this->add_body_class( "theme-{$theme_name}" );
 			// if ( is_wpshutter() ) $this->add_body_class('wpshutter');
@@ -263,7 +264,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * User Roles
 		 */
-		function init_user_roles() {
+		public function init_user_roles() {
 			global $wp_roles;
 	
 			if ( class_exists('WP_Roles') ) if ( ! isset( $wp_roles ) ) $wp_roles = new WP_Roles();	
@@ -320,7 +321,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Taxonomies
 		 */
-		function init_taxonomy() {
+		public function init_taxonomy() {
 		
 			if ( post_type_exists('wps-gallery') ) return;
 		
@@ -375,7 +376,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Additional Image Sizes
 		 */
-		function init_image_sizes() {
+		public function init_image_sizes() {
 			
 			$shutter_general_settings = get_option('shutter_general_settings');
 			
@@ -401,7 +402,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Frontend CSS
 		 */
-		function init_styles() {
+		public function init_styles() {
 			
 			$shutter_general_settings = get_option('shutter_general_settings');
 			
@@ -424,7 +425,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Frontend Scripts
 		 */
-		function frontend_scripts() {
+		public function frontend_scripts() {
 			
 			$shutter_general_settings = get_option('shutter_general_settings');
 			
@@ -443,7 +444,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		}
 		
 		// Admin Styles
-		function init_admin_styles() {
+		public function init_admin_styles() {
 			wp_register_style( 'shutter_admin_styles', $this->plugin_url() . '/admin/css/style.css' );
 			wp_enqueue_style( 'shutter_admin_styles' );
 		}
@@ -451,19 +452,19 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Logging
 		 */
-		function logger() { 
+		private function logger() { 
 		}
 	
 		/**
 		 * Validation
 		 */
-		function validation() {
+		private function validation() {
 		}
 	
 		/**
 		 * Mail
 		 */
-		function mailer() { 
+		private function mailer() { 
 		}
 
 		// Helper Functions
@@ -471,7 +472,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Plugin URL
 		 */
-		function plugin_url() { 
+		public function plugin_url() { 
 			if ( $this->plugin_url ) return $this->plugin_url;
 			return $this->plugin_url = plugins_url( basename( plugin_dir_path(__FILE__) ), basename( __FILE__ ) );
 		}
@@ -479,7 +480,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Plugin Path
 		 */
-		function plugin_path() { 	
+		public function plugin_path() { 	
 			if ( $this->plugin_path ) return $this->plugin_path;
 		
 			return $this->plugin_path = untrailingslashit( plugin_dir_path( __FILE__ ) );
@@ -488,14 +489,14 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * AJAX URL
 		 */
-		function ajax_url() { 
+		public function ajax_url() { 
 			return str_replace( array('https:', 'http:'), '', admin_url( 'admin-ajax.php' ) );
 		} 
 	 
 		/**
 		 * SSL URL
 		 */
-		function force_ssl( $content ) { 	
+		public function force_ssl( $content ) { 	
 			if ( is_ssl() ) {
 				if ( is_array($content) )
 					$content = array_map( array( &$this, 'force_ssl' ) , $content );
@@ -510,7 +511,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Load Messages
 		 */
-		function load_messages() {
+		private function load_messages() {
 			
 			if ( isset( $_SESSION['errors'] ) ) $this->errors = $_SESSION['errors'];
 			if ( isset( $_SESSION['messages'] ) ) $this->messages = $_SESSION['messages'];
@@ -528,17 +529,17 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Add an Error
 		 */
-		function add_error( $error ) { $this->errors[] = $error; }
+		private function add_error( $error ) { $this->errors[] = $error; }
 	
 		/**
 		 * Add a Message
 		 */
-		function add_message( $message ) { $this->messages[] = $message; }
+		private function add_message( $message ) { $this->messages[] = $message; }
 	
 		/**
 		 * Clear Messages and Session
 		 */
-		function clear_messages() {
+		private function clear_messages() {
 			$this->errors = $this->messages = array();
 			unset( $_SESSION['messages'], $_SESSION['errors'] );
 		}
@@ -546,32 +547,32 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Get Error Count
 		 */
-		function error_count() { return sizeof($this->errors); }
+		private function error_count() { return sizeof($this->errors); }
 	
 		/**
 		 * Get Message Count
 		 */
-		function message_count() { return sizeof($this->messages); }
+		private function message_count() { return sizeof($this->messages); }
 	
 		/**
 		 * Get Errors
 		 */
-		function get_errors() { return (array) $this->errors; }
+		private function get_errors() { return (array) $this->errors; }
 	
 		/**
 		 * Get Messages
 		 */
-		function get_messages() { return (array) $this->messages; }
+		private function get_messages() { return (array) $this->messages; }
 	
 		/**
 		 * Output Errors and Messages
 		 */
-		function show_messages() {}
+		private function show_messages() {}
 	
 		/**
 		 * Set Session Data for Messages
 		 */
-		function set_messages() {
+		private function set_messages() {
 			$_SESSION['errors'] = $this->errors;
 			$_SESSION['messages'] = $this->messages;
 		}
@@ -579,7 +580,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Redirection Hook for Message Session Data
 		 */
-		function redirect( $location, $status ) {
+		public function redirect( $location, $status ) {
 			global $is_IIS;
 			
 			$this->set_messages();
@@ -595,12 +596,12 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Return a Nonce Field
 		 */
-		function nonce_field ( $action, $referer = true , $echo = true ) { return wp_nonce_field('wpshutter-' . $action, '_n', $referer, $echo ); }
+		public function nonce_field ( $action, $referer = true , $echo = true ) { return wp_nonce_field('wpshutter-' . $action, '_n', $referer, $echo ); }
 	
 		/**
 		 * Return a url with a nonce appended
 		 */
-		function nonce_url ( $action, $url = '' ) { return add_query_arg( '_n', wp_create_nonce( 'wpshutter-' . $action ), $url ); }
+		public function nonce_url ( $action, $url = '' ) { return add_query_arg( '_n', wp_create_nonce( 'wpshutter-' . $action ), $url ); }
 	
 		/**
 		 * Check a nonce and sets shutter error in case it is invalid
@@ -613,7 +614,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		 * 
 		 * @return   bool
 		 */
-		function verify_nonce( $action, $method='_POST', $error_message = false ) {
+		public function verify_nonce( $action, $method='_POST', $error_message = false ) {
 		
 			$name = '_n';
 			$action = 'wpshutter-' . $action;
@@ -634,7 +635,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Shortcode Wrapper
 		 */
-		function shortcode_wrapper( $function, $atts = array() ) {
+		public function shortcode_wrapper( $function, $atts = array() ) {
 			ob_start();
 			call_user_func( $function, $atts );
 			return ob_get_clean();
@@ -645,7 +646,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Prevent plugins from caching a page.
 		 */
-		function nocache() {
+		public function nocache() {
 			if ( ! defined('DONOTCACHEPAGE') ) define('DONOTCACHEPAGE', 'true');
 		}
 	
@@ -654,7 +655,7 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Clear Gallery Transients
 		 */
-		function clear_wpshutter_transients( $post_id = 0 ) {
+		public function clear_wpshutter_transients( $post_id = 0 ) {
 			delete_transient('wpshutter');
 			wp_cache_flush();
 		}
@@ -662,14 +663,14 @@ if ( !class_exists( 'WPShutter' ) ) :
 		/**
 		 * Add Body Class
 		 */
-		function add_body_class( $class ) {
+		public function add_body_class( $class ) {
 			$this->_body_classes[] = sanitize_html_class( strtolower($class) );
 		}
 	
 		/**
 		 * Output Body Class
 		 */
-		function output_body_class( $classes ) {
+		public function output_body_class( $classes ) {
 			if ( sizeof( $this->_body_classes ) > 0 ) $classes = array_merge( $classes, $this->_body_classes );
 		
 			if ( is_singular('wps-gallery') ) {
@@ -683,5 +684,4 @@ if ( !class_exists( 'WPShutter' ) ) :
 	}
 
 	$GLOBALS['wpshutter'] = new WPShutter(); // All Systems Go!
-	
 endif;
